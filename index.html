@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Country Code Lookup</title>
+  <style>
+    /* Modern Light Theme Variables */
+    :root {
+      --primary: #2563eb;       /* Royal Blue */
+      --primary-hover: #1d4ed8;
+      --bg-gradient: linear-gradient(135deg, #f0f4ff 0%, #e0e7ff 100%);
+      --card-bg: #ffffff;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    /* Main Container */
+    .container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--card-bg);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      margin-top: 40px;
+      border: 1px solid white;
+    }
+
+    /* Header Section */
+    header {
+      text-align: center;
+      padding: 40px 20px 20px;
+    }
+    h1 { margin: 0; font-size: 28px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; }
+    p.subtitle { margin: 8px 0 0; color: var(--text-muted); font-size: 15px; }
+
+    /* Search Area */
+    .search-wrap {
+      padding: 20px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .input-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 16px 20px;
+      font-size: 17px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      transition: all 0.2s ease;
+      background: #f8fafc;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(37,99,235,0.1);
+    }
+
+    button.btn-primary {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0 28px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    button.btn-primary:hover { background: var(--primary-hover); }
+
+    button.btn-text {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 500;
+      cursor: pointer;
+      font-size: 14px;
+      padding: 5px;
+      align-self: flex-end;
+    }
+    button.btn-text:hover { text-decoration: underline; }
+
+    /* Results Section */
+    .results-area {
+      padding: 0 40px 40px;
+      display: none; /* Hidden by default */
+      animation: slideDown 0.3s ease-out forwards;
+    }
+    @keyframes slideDown { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+
+    .result-card {
+      background: #f1f5f9;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      border: 1px solid var(--border);
+    }
+
+    .flag-large { font-size: 64px; line-height: 1; }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 16px;
+      flex: 1;
+    }
+    
+    .info-item label { display: block; font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
+    .info-item span { font-size: 18px; font-weight: 600; color: var(--text-main); }
+    .highlight { color: var(--primary) !important; }
+
+    /* Social Media Grid */
+    .social-section {
+      background: #fafafa;
+      border-top: 1px solid var(--border);
+      padding: 30px 40px;
+    }
+    .social-title { font-size: 13px; font-weight: 700; text-transform: uppercase; color: var(--text-muted); margin-bottom: 15px; letter-spacing: 0.5px; }
+    
+    .social-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .social-tag {
+      display: inline-block;
+      text-decoration: none;
+      background: white;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .social-tag:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    /* Footer Links */
+    footer {
+      padding: 20px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    footer a { color: var(--text-muted); text-decoration: none; border-bottom: 1px dotted #cbd5e1; }
+    footer a:hover { color: var(--primary); border-bottom-style: solid; }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .container { border-radius: 0; margin-top: 0; min-height: 100vh; }
+      .input-group { flex-direction: column; }
+      .result-card { flex-direction: column; text-align: center; }
+      .search-wrap, .results-area, .social-section { padding-left: 20px; padding-right: 20px; }
+      button.btn-primary { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>Country Code Lookup</h1>
+      <p class="subtitle">Search by code (+1) or name (United States)</p>
+    </header>
+
+    <div class="search-wrap">
+      <div class="input-group">
+        <input type="text" id="searchInput" placeholder="e.g. 92, +44, Japan..." autocomplete="off">
+        <button class="btn-primary" id="searchBtn">Find</button>
+      </div>
+      <button class="btn-text" id="detectBtn">📍 Use Current Location</button>
+      <div id="statusMsg" style="font-size:13px; color:#64748b; min-height:20px;"></div>
+    </div>
+
+    <div class="results-area" id="resultBox">
+      <div class="result-card">
+        <div class="flag-large" id="resFlag">🌍</div>
+        <div class="info-grid">
+          <div class="info-item">
+            <label>Country</label>
+            <span id="resName">Unknown</span>
+          </div>
+          <div class="info-item">
+            <label>Dial Code</label>
+            <span id="resCode" class="highlight">—</span>
+          </div>
+          <div class="info-item">
+            <label>ISO Code</label>
+            <span id="resISO">—</span>
+          </div>
+          <div class="info-item">
+            <label>Currency</label>
+            <span id="resCurr">—</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="social-section">
+      <div class="social-title">Connect with us</div>
+      <div class="social-links">
+        <a href="https://www.youtube.com/@countrycode-io" target="_blank" class="social-tag">YouTube</a>
+        <a href="https://www.facebook.com/countrycode.io/" target="_blank" class="social-tag">Facebook</a>
+        <a href="https://www.tiktok.com/@countrycode.io" target="_blank" class="social-tag">TikTok</a>
+        <a href="https://www.instagram.com/countrycode.io/" target="_blank" class="social-tag">Instagram</a>
+        <a href="https://www.linkedin.com/company/country-code/" target="_blank" class="social-tag">LinkedIn</a>
+        <a href="https://www.reddit.com/user/Low_Bite8751/" target="_blank" class="social-tag">Reddit</a>
+        <a href="https://www.behance.net/countrycodeio" target="_blank" class="social-tag">Behance</a>
+        <a href="https://github.com/gulzar-abbas/country-code" target="_blank" class="social-tag">GitHub</a>
+        <a href="https://huggingface.co/countrycodesio" target="_blank" class="social-tag">HuggingFace</a>
+        <a href="https://medium.com/@countrycode.io" target="_blank" class="social-tag">Medium</a>
+        <a href="https://www.trustpilot.com/review/countrycode.io" target="_blank" class="social-tag">Trustpilot</a>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <a href="https://countrycode.io/" target="_blank">Home</a> • 
+    <a href="https://countrycodeio.vercel.app/" target="_blank">App Version</a> • 
+    <a href="https://countrycodeio.blogspot.com/2025/12/iso-country-codes.html" target="_blank">ISO Codes List</a> • 
+    <a href="https://countrycodeio.blogspot.com/2025/12/complete-country-code.html" target="_blank">Complete Code List</a>
+    <br><br>
+    © 2025 Country Code IO
+  </footer>
+
+  <script>
+    // Data (Expandable)
+    const countries = [
+        {name:"Afghanistan", code:"+93", iso:"AF", iso3:"AFG", flag:"🇦🇫", currency:"AFN"},
+        {name:"Australia", code:"+61", iso:"AU", iso3:"AUS", flag:"🇦🇺", currency:"AUD"},
+        {name:"Bangladesh", code:"+880", iso:"BD", iso3:"BGD", flag:"🇧🇩", currency:"BDT"},
+        {name:"Brazil", code:"+55", iso:"BR", iso3:"BRA", flag:"🇧🇷", currency:"BRL"},
+        {name:"Canada", code:"+1", iso:"CA", iso3:"CAN", flag:"🇨🇦", currency:"CAD"},
+        {name:"China", code:"+86", iso:"CN", iso3:"CHN", flag:"🇨🇳", currency:"CNY"},
+        {name:"France", code:"+33", iso:"FR", iso3:"FRA", flag:"🇫🇷", currency:"EUR"},
+        {name:"Germany", code:"+49", iso:"DE", iso3:"DEU", flag:"🇩🇪", currency:"EUR"},
+        {name:"India", code:"+91", iso:"IN", iso3:"IND", flag:"🇮🇳", currency:"INR"},
+        {name:"Indonesia", code:"+62", iso:"ID", iso3:"IDN", flag:"🇮🇩", currency:"IDR"},
+        {name:"Iran", code:"+98", iso:"IR", iso3:"IRN", flag:"🇮🇷", currency:"IRR"},
+        {name:"Italy", code:"+39", iso:"IT", iso3:"ITA", flag:"🇮🇹", currency:"EUR"},
+        {name:"Japan", code:"+81", iso:"JP", iso3:"JPN", flag:"🇯🇵", currency:"JPY"},
+        {name:"Mexico", code:"+52", iso:"MX", iso3:"MEX", flag:"🇲🇽", currency:"MXN"},
+        {name:"Nigeria", code:"+234", iso:"NG", iso3:"NGA", flag:"🇳🇬", currency:"NGN"},
+        {name:"Pakistan", code:"+92", iso:"PK", iso3:"PAK", flag:"🇵🇰", currency:"PKR"},
+        {name:"Philippines", code:"+63", iso:"PH", iso3:"PHL", flag:"🇵🇭", currency:"PHP"},
+        {name:"Russia", code:"+7", iso:"RU", iso3:"RUS", flag:"🇷🇺", currency:"RUB"},
+        {name:"Saudi Arabia", code:"+966", iso:"SA", iso3:"SAU", flag:"🇸🇦", currency:"SAR"},
+        {name:"South Korea", code:"+82", iso:"KR", iso3:"KOR", flag:"🇰🇷", currency:"KRW"},
+        {name:"Spain", code:"+34", iso:"ES", iso3:"ESP", flag:"🇪🇸", currency:"EUR"},
+        {name:"Turkey", code:"+90", iso:"TR", iso3:"TUR", flag:"🇹🇷", currency:"TRY"},
+        {name:"United Arab Emirates", code:"+971", iso:"AE", iso3:"ARE", flag:"🇦🇪", currency:"AED"},
+        {name:"United Kingdom", code:"+44", iso:"GB", iso3:"GBR", flag:"🇬🇧", currency:"GBP"},
+        {name:"United States", code:"+1", iso:"US", iso3:"USA", flag:"🇺🇸", currency:"USD"},
+        {name:"Vietnam", code:"+84", iso:"VN", iso3:"VNM", flag:"🇻🇳", currency:"VND"}
+    ];
+
+    const input = document.getElementById('searchInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const detectBtn = document.getElementById('detectBtn');
+    const statusMsg = document.getElementById('statusMsg');
+    const resultBox = document.getElementById('resultBox');
+    
+    // UI Elements
+    const resFlag = document.getElementById('resFlag');
+    const resName = document.getElementById('resName');
+    const resCode = document.getElementById('resCode');
+    const resISO = document.getElementById('resISO');
+    const resCurr = document.getElementById('resCurr');
+
+    function search(){
+      const val = input.value.trim().toLowerCase().replace(/^\+/, '');
+      if(!val) return;
+      statusMsg.innerText = 'Searching...';
+      
+      let found = countries.find(c => c.code.replace('+','') === val);
+      if(!found){
+        found = countries.find(c => 
+          c.name.toLowerCase().includes(val) || 
+          c.iso.toLowerCase() === val || 
+          c.iso3.toLowerCase() === val
+        );
+      }
+
+      if(found){
+        showResult(found);
+        statusMsg.innerText = '';
+      } else {
+        statusMsg.innerText = 'No matching country found.';
+        resultBox.style.display = 'none';
+      }
+    }
+
+    function showResult(data){
+      resultBox.style.display = 'block';
+      resFlag.innerText = data.flag || '🏳️';
+      resName.innerText = data.name;
+      resCode.innerText = data.code;
+      resISO.innerText = data.iso;
+      resCurr.innerText = data.currency;
+    }
+
+    searchBtn.addEventListener('click', search);
+    input.addEventListener('keypress', (e)=>{ if(e.key === 'Enter') search() });
+
+    detectBtn.addEventListener('click', async ()=>{
+      detectBtn.innerText = 'Locating...';
+      try{
+        const req = await fetch('https://ipapi.co/json/');
+        const data = await req.json();
+        if(data && data.country_code){
+          const found = countries.find(c => c.iso === data.country_code);
+          if(found){
+            input.value = found.name;
+            showResult(found);
+            statusMsg.innerText = 'Location detected: ' + found.name;
+          } else {
+            // Fallback for API data not in our small list
+            showResult({
+              name: data.country_name,
+              code: data.country_calling_code,
+              iso: data.country_code,
+              currency: data.currency,
+              flag: '📍'
+            });
+            input.value = data.country_name;
+          }
+        }
+      }catch(e){
+        statusMsg.innerText = 'Could not detect location.';
+      }
+      detectBtn.innerText = '📍 Use Current Location';
+    });
+  </script>
+</body>
+</html>
